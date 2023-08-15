@@ -3,8 +3,12 @@ package com.destroY17.repository;
 import com.destroY17.entity.Currency;
 import com.destroY17.repository.rowmapper.CurrencyRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -38,15 +42,15 @@ public class CurrencyRepository implements CrudRepository<Currency, Integer> {
 
     @Override
     public Currency save(Currency entity)  {
-        final String query = "INSERT INTO Currencies (code, full_name, sign) VALUES (?, ?, ?)";
-        int saveId = jdbcTemplate.update(query, entity.getCode(), entity.getName(), entity.getSign());
-        entity.setId(saveId);
-        return entity;
+        final String query = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
+        jdbcTemplate.update(query, entity.getCode(), entity.getName(), entity.getSign());
+        return getByCode(entity.getCode())
+                .orElseThrow(() -> new InvalidDataAccessResourceUsageException("Entity saving error"));
     }
 
     @Override
     public Currency update(Currency entity) {
-        final String query = "UPDATE Currencies SET (code, full_name, sign) = (?, ?, ?) WHERE id = ?";
+        final String query = "UPDATE currencies SET (code, full_name, sign) = (?, ?, ?) WHERE id = ?";
         jdbcTemplate.update(query, entity.getCode(), entity.getName(), entity.getSign(), entity.getId());
         return entity;
     }

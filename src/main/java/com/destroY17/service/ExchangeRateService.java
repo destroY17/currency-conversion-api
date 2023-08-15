@@ -3,7 +3,6 @@ package com.destroY17.service;
 import com.destroY17.dto.ExchangeDTO;
 import com.destroY17.entity.ExchangeRate;
 import com.destroY17.exception.ExchangeException;
-import com.destroY17.exception.NotFoundException;
 import com.destroY17.repository.ExchangeRateRepository;
 import jakarta.validation.constraints.Positive;
 import lombok.NonNull;

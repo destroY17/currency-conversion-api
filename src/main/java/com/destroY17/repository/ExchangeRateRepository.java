@@ -4,6 +4,7 @@ import com.destroY17.entity.ExchangeRate;
 import com.destroY17.repository.rowmapper.ExchangeRateRowMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -86,10 +87,10 @@ public class ExchangeRateRepository implements CrudRepository<ExchangeRate, Inte
     public ExchangeRate save(ExchangeRate entity) {
         final String query = "INSERT INTO exchange_rates " +
                 "(base_currency_id, target_currency_id, rate) VALUES (?, ?, ?)";
-        int saveId = jdbcTemplate.update(query, entity.getBaseCurrency().getId(),
+        jdbcTemplate.update(query, entity.getBaseCurrency().getId(),
                 entity.getTargetCurrency().getId(), entity.getRate());
-        entity.setId(saveId);
-        return entity;
+        return getByCodes(entity.getBaseCurrency().getCode(), entity.getTargetCurrency().getCode())
+                .orElseThrow(() -> new InvalidDataAccessResourceUsageException("Exchange rate saving error"));
     }
 
     @Override
